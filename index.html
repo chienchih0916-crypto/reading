@@ -200,6 +200,8 @@
       min-width: .9em;
       border-radius: 7px;
       transition: background .15s ease, box-shadow .15s ease;
+      user-select: none;
+      touch-action: none;
     }
 
     .glyph {
@@ -644,6 +646,7 @@
       font-weight: 900;
       cursor: grab;
       user-select: none;
+      touch-action: none;
     }
 
     .draggable-subject:active {
@@ -661,6 +664,27 @@
       border-radius: 999px;
       background: #fff;
       object-fit: contain;
+    }
+
+    .touch-drag-preview {
+      position: fixed;
+      z-index: 100;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 58px;
+      height: 58px;
+      border: 2px solid var(--red);
+      border-radius: 999px;
+      background: #fff;
+      box-shadow: 0 10px 24px rgba(36, 33, 30, .22);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+    }
+
+    .touch-drag-preview .subject-icon {
+      width: 100%;
+      height: 100%;
     }
 
     @media (max-width: 920px) {
@@ -851,6 +875,7 @@
     let selectionStart = null;
     let pendingChars = [];
     let answerTool = "highlight";
+    let touchDrag = null;
 
     const subjects = {
       mulan: {
@@ -884,6 +909,34 @@
       return subjects[subject]?.icon || "";
     }
 
+    function moveTouchPreview(event) {
+      if (!touchDrag) return;
+      touchDrag.preview.style.left = `${event.clientX}px`;
+      touchDrag.preview.style.top = `${event.clientY}px`;
+    }
+
+    function startTouchSubjectDrag(event, subjectKey) {
+      if (currentMode !== "suspect" || event.pointerType === "mouse") return;
+      event.preventDefault();
+      const preview = document.createElement("div");
+      preview.className = "touch-drag-preview";
+      preview.innerHTML = renderSubjectIcon(subjectKey);
+      document.body.append(preview);
+      touchDrag = { subjectKey, preview };
+      moveTouchPreview(event);
+    }
+
+    function finishTouchSubjectDrag(event) {
+      if (!touchDrag) return;
+      event.preventDefault();
+      const preview = touchDrag.preview;
+      preview.remove();
+      const target = document.elementFromPoint(event.clientX, event.clientY);
+      const gap = target?.closest?.(".gap");
+      if (gap && currentMode === "suspect") fillSubjectGap(gap, touchDrag.subjectKey);
+      touchDrag = null;
+    }
+
     function renderSubjectPalette() {
       suspectPalette.innerHTML = roundSubjects[currentRound].map((key) => {
         const subject = subjects[key];
@@ -898,6 +951,7 @@
         subject.addEventListener("dragstart", (event) => {
           event.dataTransfer.setData("text/plain", subject.dataset.subject);
         });
+        subject.addEventListener("pointerdown", (event) => startTouchSubjectDrag(event, subject.dataset.subject));
       });
     }
 
@@ -1165,29 +1219,39 @@
       history.push({ type: "subject-remove", node: gap, previous });
     });
 
-    poem.addEventListener("mousedown", (event) => {
+    poem.addEventListener("pointerdown", (event) => {
       if (currentMode !== "doubt") return;
       const char = event.target.closest(".char");
       if (!char) return;
+      event.preventDefault();
       selectionStart = char;
       clearPending();
     });
 
-    poem.addEventListener("mouseover", (event) => {
+    poem.addEventListener("pointermove", (event) => {
       if (currentMode !== "doubt" || !selectionStart) return;
-      const char = event.target.closest(".char");
+      event.preventDefault();
+      const target = document.elementFromPoint(event.clientX, event.clientY);
+      const char = target?.closest?.(".char");
       if (!char) return;
       const selected = getCharRange(selectionStart, char);
       if (selected.length > 1) markPending(selected);
     });
 
-    poem.addEventListener("mouseup", (event) => {
+    poem.addEventListener("pointerup", (event) => {
       if (currentMode !== "doubt" || !selectionStart) return;
-      const char = event.target.closest(".char") || selectionStart;
+      event.preventDefault();
+      const target = document.elementFromPoint(event.clientX, event.clientY);
+      const char = target?.closest?.(".char") || selectionStart;
       const selected = getCharRange(selectionStart, char);
       selectionStart = null;
       clearPending();
       editClueNote(selected);
+    });
+
+    poem.addEventListener("pointercancel", () => {
+      selectionStart = null;
+      clearPending();
     });
 
     poem.addEventListener("dragover", (event) => {
@@ -1480,6 +1544,19 @@
     document.addEventListener("keydown", (event) => {
       if (event.key === "1") roundButtons[0].click();
       if (event.key === "2") roundButtons[1].click();
+    });
+
+    document.addEventListener("pointermove", (event) => {
+      if (!touchDrag) return;
+      event.preventDefault();
+      moveTouchPreview(event);
+    }, { passive: false });
+
+    document.addEventListener("pointerup", finishTouchSubjectDrag);
+    document.addEventListener("pointercancel", () => {
+      if (!touchDrag) return;
+      touchDrag.preview.remove();
+      touchDrag = null;
     });
 
     noteEditorInput.addEventListener("keydown", (event) => {
