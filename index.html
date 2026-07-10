@@ -1,0 +1,1504 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>木蘭詩第一節互動閱讀</title>
+  <style>
+    :root {
+      --ink: #24211e;
+      --paper: #fffdf7;
+      --line: #dfd3bd;
+      --soft: #f4ecdd;
+      --red: #bd2f32;
+      --green: #317c62;
+      --blue: #315f9f;
+      --violet: #6d4b92;
+      --gold: #bd8224;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(255, 253, 247, .96), rgba(245, 239, 228, .98)),
+        radial-gradient(circle at 10% 16%, rgba(189, 130, 36, .16), transparent 30%),
+        radial-gradient(circle at 92% 10%, rgba(49, 95, 159, .12), transparent 34%);
+      font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+    }
+
+    .app {
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      gap: 14px;
+      min-height: 100vh;
+      padding: 16px clamp(16px, 3vw, 42px) 24px;
+    }
+
+    .strategy-bar {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(150px, 1fr));
+      gap: 12px;
+    }
+
+    .strategy-button,
+    .round-button,
+    .section-button,
+    .tool-button,
+    .compare-button {
+      border: 2px solid transparent;
+      border-radius: 8px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .strategy-button {
+      min-height: 70px;
+      padding: 10px 14px;
+      color: #fff;
+      text-align: left;
+      box-shadow: 0 8px 18px rgba(57, 46, 31, .12);
+    }
+
+    .strategy-button strong {
+      display: block;
+      font-size: clamp(22px, 2vw, 32px);
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .strategy-button.active {
+      border-color: #fff;
+      box-shadow: 0 0 0 4px rgba(36, 33, 30, .18), 0 12px 24px rgba(57, 46, 31, .18);
+    }
+
+    .detect { background: var(--green); }
+    .suspect { background: var(--red); }
+    .doubt { background: var(--blue); }
+    .infer { background: var(--violet); }
+
+    .lesson-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 16px;
+      background: rgba(255, 253, 247, .88);
+    }
+
+    .title-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(25px, 2.6vw, 42px);
+      letter-spacing: 0;
+    }
+
+    .mode-hint {
+      margin: 0;
+      color: var(--red);
+      font-size: clamp(16px, 1.4vw, 22px);
+      font-weight: 800;
+      text-align: right;
+    }
+
+    body.mode-detect .mode-hint {
+      color: var(--green);
+    }
+
+    body.mode-doubt .mode-hint {
+      color: var(--blue);
+    }
+
+    body.mode-infer .mode-hint {
+      color: var(--violet);
+    }
+
+    .text-panel {
+      display: grid;
+      align-content: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: clamp(20px, 3vw, 42px);
+      background: rgba(255, 253, 247, .92);
+      box-shadow: 0 18px 40px rgba(74, 55, 30, .12);
+      overflow: hidden;
+    }
+
+    body.round-2 .text-panel {
+      padding: clamp(12px, 1.5vw, 24px);
+    }
+
+    .poem {
+      display: grid;
+      gap: clamp(20px, 2vw, 34px);
+      max-width: 1180px;
+      font-family: "Songti TC", "Noto Serif TC", "PMingLiU", serif;
+      font-size: clamp(32px, 4.1vw, 66px);
+      line-height: 1.16;
+      transition: font-size .18s ease, gap .18s ease;
+    }
+
+    body.round-2 .poem {
+      gap: clamp(8px, 1vw, 16px);
+      font-size: clamp(25px, 3.25vw, 52px);
+      line-height: 1.08;
+    }
+
+    body.round-2 .line {
+      min-height: 1.42em;
+    }
+
+    body.round-2 .note {
+      min-height: .5em;
+      font-size: .28em;
+    }
+
+    body.mode-infer .text-panel {
+      grid-template-columns: minmax(0, 1.45fr) minmax(300px, .75fr);
+      grid-template-areas:
+        "poem answer"
+        "translation answer";
+      column-gap: 18px;
+      row-gap: 12px;
+      align-content: start;
+      padding-top: clamp(14px, 2vw, 28px);
+      padding-bottom: clamp(14px, 2vw, 28px);
+    }
+
+    body.mode-infer .poem {
+      grid-area: poem;
+      gap: clamp(6px, .8vw, 12px);
+      font-size: clamp(20px, 2.45vw, 38px);
+    }
+
+    .line {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0;
+      min-height: 1.7em;
+    }
+
+    .char {
+      position: relative;
+      display: inline-grid;
+      grid-template-rows: auto minmax(.58em, auto);
+      justify-items: center;
+      align-items: start;
+      min-width: .9em;
+      border-radius: 7px;
+      transition: background .15s ease, box-shadow .15s ease;
+    }
+
+    .glyph {
+      grid-row: 1;
+    }
+
+    .note {
+      grid-row: 2;
+      min-height: .58em;
+      color: var(--blue);
+      font: 800 .31em/1.05 "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      white-space: nowrap;
+    }
+
+    .note-input {
+      width: 100%;
+      border: 2px solid var(--blue);
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: var(--blue);
+      background: #fff;
+      box-shadow: 0 8px 18px rgba(36, 33, 30, .18);
+      font: 800 32px/1.2 "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+    }
+
+    .note-editor {
+      position: fixed;
+      z-index: 20;
+      right: clamp(18px, 3vw, 44px);
+      top: 50%;
+      display: none;
+      width: min(360px, 32vw);
+      border: 2px solid var(--blue);
+      border-radius: 8px;
+      padding: 16px;
+      background: rgba(255, 253, 247, .98);
+      box-shadow: 0 18px 42px rgba(36, 33, 30, .2);
+      transform: translateY(-50%);
+    }
+
+    .note-editor.visible {
+      display: grid;
+      gap: 10px;
+    }
+
+    .note-editor label {
+      color: var(--blue);
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .note-editor small {
+      color: #6d6258;
+      font-size: 15px;
+    }
+
+    .char:hover {
+      background: rgba(189, 130, 36, .12);
+    }
+
+    .gap {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: .24em;
+      flex: 0 0 .24em;
+      min-height: 1.18em;
+      color: var(--green);
+      font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      font-weight: 900;
+      cursor: pointer;
+      vertical-align: baseline;
+    }
+
+    .gap:hover {
+      background: rgba(189, 47, 50, .1);
+    }
+
+    body.mode-suspect .gap:hover {
+      outline: 2px dashed rgba(189, 47, 50, .35);
+      outline-offset: 2px;
+    }
+
+    .gap.has-slash::before {
+      content: "/";
+    }
+
+    .gap.has-subject {
+      width: 1.08em;
+      height: 1.08em;
+      flex-basis: 1.08em;
+      margin: 0 .06em;
+      border: 2px solid var(--red);
+      border-radius: 999px;
+      background: #fff;
+      overflow: hidden;
+      transform: translateY(-.12em);
+    }
+
+    .subject-icon {
+      display: inline-block;
+      width: 100%;
+      height: 100%;
+      border-radius: 999px;
+      object-fit: contain;
+    }
+
+    .shadow-icon {
+      display: inline-block;
+      width: 74%;
+      height: 74%;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 50% 28%, #111 0 24%, transparent 25%),
+        linear-gradient(#111 0 0) 50% 82% / 62% 46% no-repeat;
+    }
+
+    .circle-mark {
+      box-shadow: 0 0 0 .08em var(--red);
+      border-radius: 999px;
+      padding: 0 .14em;
+    }
+
+    .clue-mark {
+      background: rgba(49, 95, 159, .1);
+    }
+
+    .clue-mark.group-start {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .clue-mark.group-middle {
+      border-radius: 0;
+    }
+
+    .clue-mark.group-end {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    .clue-mark.group-start,
+    .clue-mark.group-middle,
+    .clue-mark.group-end,
+    .gap.clue-bridge {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    .gap.clue-bridge {
+      align-self: stretch;
+      min-height: 0;
+      border-radius: 0;
+      background: rgba(49, 95, 159, .1);
+    }
+
+    .pending-clue {
+      outline: 2px dashed rgba(49, 95, 159, .35);
+      outline-offset: 2px;
+    }
+
+    .translation-panel {
+      display: none;
+      gap: 12px;
+      margin-top: clamp(12px, 1.5vw, 22px);
+      max-width: 1180px;
+    }
+
+    body.mode-infer .translation-panel {
+      display: contents;
+    }
+
+    body.mode-infer .translation-box:first-child {
+      grid-area: translation;
+    }
+
+    body.mode-infer .answer-box {
+      grid-area: answer;
+      align-self: start;
+    }
+
+    .translation-box {
+      display: grid;
+      gap: 9px;
+    }
+
+    .translation-box label {
+      color: var(--violet);
+      font-size: 19px;
+      font-weight: 900;
+    }
+
+    textarea,
+    .answer {
+      min-height: 168px;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #fffaf0;
+      color: var(--ink);
+      font: 20px/1.55 "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      resize: vertical;
+    }
+
+    body.mode-infer textarea {
+      min-height: 230px;
+    }
+
+    .answer {
+      display: none;
+      white-space: pre-wrap;
+    }
+
+    .answer-box {
+      display: grid;
+      gap: 10px;
+    }
+
+    .answer.visible {
+      display: block;
+    }
+
+    .answer-tools {
+      display: none;
+      gap: 8px;
+    }
+
+    .answer-tools.visible {
+      display: flex;
+    }
+
+    .answer-tool {
+      min-height: 34px;
+      border: 2px solid #cdbf9f;
+      border-radius: 8px;
+      padding: 4px 10px;
+      background: #fffaf0;
+      color: var(--ink);
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .answer-tool.active {
+      color: #fff;
+      background: var(--blue);
+      border-color: var(--blue);
+    }
+
+    .answer-segment {
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .answer-segment.marked {
+      background: #fff176;
+      box-shadow: inset 0 -.18em 0 rgba(255, 193, 7, .55);
+    }
+
+    .self-assessment {
+      display: none;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .self-assessment.visible {
+      display: grid;
+    }
+
+    .self-assessment-title {
+      color: var(--violet);
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .score-buttons {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .score-button {
+      width: 58px;
+      height: 58px;
+      border: 0;
+      border-radius: 999px;
+      background-color: transparent;
+      background-image: url("../截圖 2026-07-10 下午1.08.20.png");
+      background-repeat: no-repeat;
+      background-size: 500% 100%;
+      box-shadow: 0 0 0 0 rgba(36, 33, 30, 0);
+      cursor: pointer;
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+
+    .score-button.active {
+      box-shadow: 0 0 0 6px rgba(36, 33, 30, .16);
+      transform: scale(1.08);
+    }
+
+    .self-assessment.scored .score-button:not(.active) {
+      display: none;
+    }
+
+    .self-assessment.scored .score-button.active {
+      width: 86px;
+      height: 86px;
+      transform: none;
+    }
+
+    .score-100 { background-position: 100% 50%; }
+    .score-80 { background-position: 75% 50%; }
+    .score-60 { background-position: 50% 50%; }
+    .score-40 { background-position: 25% 50%; }
+    .score-20 { background-position: 0 50%; }
+
+    .control-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: rgba(255, 253, 247, .9);
+    }
+
+    body.round-2 .control-bar {
+      padding: 8px 10px;
+    }
+
+    body.round-2 .section-button,
+    body.round-2 .tool-button,
+    body.round-2 .compare-button {
+      min-height: 38px;
+      padding: 6px 11px;
+      font-size: 15px;
+    }
+
+    body.round-2 .draggable-subject {
+      min-height: 38px;
+      padding: 4px 8px;
+      font-size: 15px;
+    }
+
+    body.round-2 .drag-avatar {
+      flex-basis: 30px;
+      width: 30px;
+      height: 30px;
+    }
+
+    .round-controls,
+    .section-controls,
+    .tool-controls,
+    .suspect-palette {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .round-button,
+    .section-button,
+    .tool-button,
+    .compare-button {
+      min-height: 46px;
+      padding: 8px 15px;
+      background: #fffaf0;
+      color: var(--ink);
+      border-color: #cdbf9f;
+      font-weight: 800;
+    }
+
+    .round-button {
+      display: inline-grid;
+      place-items: center;
+      width: 42px;
+      min-height: 42px;
+      padding: 0;
+      border-radius: 999px;
+      font-size: 22px;
+    }
+
+    .round-button.active,
+    .section-button.active,
+    .tool-button.active {
+      color: #fff;
+      background: var(--ink);
+      border-color: var(--ink);
+    }
+
+    .section-button[disabled] {
+      opacity: .45;
+      cursor: default;
+    }
+
+    .tool-button[disabled] {
+      opacity: .42;
+      cursor: default;
+    }
+
+    .compare-button {
+      color: #fff;
+      background: var(--violet);
+      border-color: var(--violet);
+    }
+
+    .download-button {
+      color: #fff;
+      background: var(--blue);
+      border-color: var(--blue);
+    }
+
+    .answer-box .compare-button {
+      width: 100%;
+      min-height: 58px;
+      font-size: 20px;
+    }
+
+    .compare-button[disabled] {
+      opacity: .42;
+      cursor: default;
+    }
+
+    .suspect-palette {
+      display: none;
+      align-items: center;
+    }
+
+    body.mode-suspect .suspect-palette {
+      display: flex;
+    }
+
+    .draggable-subject {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 46px;
+      border: 2px solid #cdbf9f;
+      border-radius: 8px;
+      padding: 6px 10px;
+      background: #fffaf0;
+      color: var(--ink);
+      font-weight: 900;
+      cursor: grab;
+      user-select: none;
+    }
+
+    .draggable-subject:active {
+      cursor: grabbing;
+    }
+
+    .drag-avatar {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 34px;
+      width: 34px;
+      height: 34px;
+      border: 1px solid #cdbf9f;
+      border-radius: 999px;
+      background: #fff;
+      object-fit: contain;
+    }
+
+    @media (max-width: 920px) {
+      .strategy-bar,
+      body.mode-infer .translation-panel {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      body.mode-infer .text-panel {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "poem"
+          "answer"
+          "translation";
+      }
+
+      body.mode-infer .answer-box {
+        grid-area: answer;
+      }
+
+      .lesson-head {
+        display: grid;
+      }
+
+      .mode-hint {
+        text-align: left;
+      }
+
+      .note-editor {
+        left: 18px;
+        right: 18px;
+        top: auto;
+        bottom: 88px;
+        width: auto;
+        transform: none;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .app {
+        padding: 12px;
+      }
+
+      .strategy-bar,
+      body.mode-infer .translation-panel {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="mode-detect">
+  <main class="app">
+    <nav class="strategy-bar" aria-label="閱讀策略歷程">
+      <button class="strategy-button detect active" type="button" data-mode="detect">
+        <strong>抽絲剝繭</strong>
+      </button>
+      <button class="strategy-button suspect" type="button" data-mode="suspect">
+        <strong>誰是嫌疑人？</strong>
+      </button>
+      <button class="strategy-button doubt" type="button" data-mode="doubt">
+        <strong>分析疑點</strong>
+      </button>
+      <button class="strategy-button infer" type="button" data-mode="infer">
+        <strong>推理事件經過</strong>
+      </button>
+    </nav>
+
+    <header class="lesson-head">
+      <div class="title-group">
+        <h1>木蘭詩 第一節</h1>
+        <div class="round-controls" aria-label="第一節文本回合">
+          <button class="round-button active" type="button" data-round="1">1</button>
+          <button class="round-button" type="button" data-round="2">2</button>
+        </div>
+      </div>
+      <p class="mode-hint" id="modeHint">斷句：點選字與字之間的空隙，畫上或取消 Slash /</p>
+    </header>
+
+    <section class="text-panel" aria-label="木蘭詩第一節段落文本">
+      <div class="poem" id="poem"></div>
+
+      <section class="translation-panel" aria-label="全文翻譯比對">
+        <div class="translation-box">
+          <label for="studentTranslation">學生翻譯</label>
+          <textarea id="studentTranslation" placeholder="請翻譯這段內容....按下翻譯比對後，無法再次修正。"></textarea>
+        </div>
+        <div class="translation-box answer-box">
+          <button class="compare-button" type="button" id="compareButton" disabled>翻譯比對</button>
+          <div class="answer-tools" id="answerTools" aria-label="正確翻譯畫記工具">
+            <button class="answer-tool active" type="button" data-tool="highlight">螢光筆</button>
+            <button class="answer-tool" type="button" data-tool="erase">橡皮擦</button>
+          </div>
+          <div class="answer" id="modelTranslation"></div>
+          <div class="self-assessment" id="selfAssessment" aria-label="翻譯自我評估">
+            <div class="self-assessment-title">自我評估</div>
+            <div class="score-buttons">
+              <button class="score-button score-100" type="button" data-score="100" title="100%" aria-label="100%"></button>
+              <button class="score-button score-80" type="button" data-score="80" title="80%" aria-label="80%"></button>
+              <button class="score-button score-60" type="button" data-score="60" title="60%" aria-label="60%"></button>
+              <button class="score-button score-40" type="button" data-score="40" title="40%" aria-label="40%"></button>
+              <button class="score-button score-20" type="button" data-score="20" title="20%" aria-label="20%"></button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <aside class="note-editor" id="noteEditor" aria-label="難詞解釋輸入">
+      <label id="noteEditorLabel" for="noteEditorInput">解釋</label>
+      <input class="note-input" id="noteEditorInput" type="text" autocomplete="off">
+      <small>按 Enter 完成；清空後完成會解除難字畫記。</small>
+    </aside>
+
+    <footer class="control-bar">
+      <div class="section-controls" aria-label="章節導覽">
+        <button class="section-button active" type="button">第一節</button>
+        <button class="section-button" type="button" disabled>第二節</button>
+        <button class="section-button" type="button" disabled>第三節</button>
+        <button class="section-button" type="button" disabled>第四節</button>
+        <button class="section-button" type="button" disabled>第五節</button>
+        <button class="section-button" type="button" disabled>第六節</button>
+      </div>
+
+      <div class="suspect-palette" id="suspectPalette" aria-label="主詞拖曳工具"></div>
+
+      <div class="tool-controls" aria-label="畫記工具">
+        <button class="tool-button" type="button" id="clearButton">清除頁面</button>
+        <button class="tool-button download-button" type="button" id="downloadButton">下載學習歷程</button>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    const rounds = {
+      1: {
+        label: "第一回合：背景交代、提問",
+        lines: [
+          "唧唧復唧唧，木蘭當戶織。",
+          "不聞機杼聲，惟聞女嘆息。",
+          "問女何所思？問女何所憶？"
+        ],
+        translation: "織布機唧唧又唧唧地響著，木蘭正對著門織布。\n聽不見織布機的聲音，只聽見木蘭在嘆息。\n問木蘭在想什麼？問木蘭在惦記什麼？"
+      },
+      2: {
+        label: "第二回合：木蘭回答",
+        lines: [
+          "「女亦無所思，女亦無所憶。",
+          "昨夜見軍帖，可汗大點兵，",
+          "軍書十二卷，卷卷有爺名。",
+          "阿爺無大兒，木蘭無長兄，",
+          "願為市鞍馬，從此替爺征。」"
+        ],
+        translation: "木蘭回答：「我也沒有想什麼，也沒有惦記什麼。\n昨晚看見徵兵的文書，可汗正在大規模徵兵。\n徵兵名冊有很多卷，每一卷都有父親的名字。\n父親沒有長大成人的兒子，木蘭也沒有兄長。\n我願意為此去買鞍馬，從今以後代替父親出征。」"
+      }
+    };
+
+    const hints = {
+      detect: "斷句：點選字與字之間的空隙，畫上或取消 Slash /",
+      suspect: "圈補主詞：拖曳主詞圖像到句中，補出隱藏的主詞。",
+      doubt: "推論：點選難詞、代詞，利用換字、加字、上下文推論字義。",
+      infer: "加字翻譯：請完整翻譯後，再按下翻譯比對，並為自己評分"
+    };
+
+    const body = document.body;
+    const poem = document.getElementById("poem");
+    const modeHint = document.getElementById("modeHint");
+    const modelTranslation = document.getElementById("modelTranslation");
+    const noteEditor = document.getElementById("noteEditor");
+    const noteEditorLabel = document.getElementById("noteEditorLabel");
+    const noteEditorInput = document.getElementById("noteEditorInput");
+    const studentTranslation = document.getElementById("studentTranslation");
+    const compareButton = document.getElementById("compareButton");
+    const downloadButton = document.getElementById("downloadButton");
+    const clearButton = document.getElementById("clearButton");
+    const selfAssessment = document.getElementById("selfAssessment");
+    const answerTools = document.getElementById("answerTools");
+    const answerToolButtons = Array.from(document.querySelectorAll(".answer-tool"));
+    const scoreButtons = Array.from(document.querySelectorAll(".score-button"));
+    const suspectPalette = document.getElementById("suspectPalette");
+    const strategyButtons = Array.from(document.querySelectorAll(".strategy-button"));
+    const roundButtons = Array.from(document.querySelectorAll(".round-button"));
+    const history = [];
+    const pageStates = {};
+    let currentMode = "detect";
+    let currentRound = "1";
+    let editingChars = [];
+    let noteCounter = 0;
+    let selectionStart = null;
+    let pendingChars = [];
+    let answerTool = "highlight";
+
+    const subjects = {
+      mulan: {
+        label: "木蘭",
+        icon: '<img class="subject-icon" src="../木蘭詩遊戲/人物-去背.png" alt="木蘭">'
+      },
+      shadow: {
+        label: "黑衣人",
+        icon: '<span class="shadow-icon" aria-label="黑衣人"></span>'
+      },
+      father: {
+        label: "父親",
+        icon: '<img class="subject-icon" src="../截圖 2026-07-10 中午12.11.56.png" alt="父親">'
+      },
+      khan: {
+        label: "可汗",
+        icon: '<img class="subject-icon" src="../截圖 2026-07-10 中午12.12.26.png" alt="可汗">'
+      },
+      document: {
+        label: "軍書",
+        icon: '<img class="subject-icon" src="../截圖 2026-07-10 中午12.20.34.png" alt="軍書">'
+      }
+    };
+
+    const roundSubjects = {
+      1: ["mulan", "shadow"],
+      2: ["mulan", "father", "khan", "document"]
+    };
+
+    function renderSubjectIcon(subject) {
+      return subjects[subject]?.icon || "";
+    }
+
+    function renderSubjectPalette() {
+      suspectPalette.innerHTML = roundSubjects[currentRound].map((key) => {
+        const subject = subjects[key];
+        return `
+          <div class="draggable-subject" draggable="true" data-subject="${key}">
+            <span class="drag-avatar">${subject.icon}</span>
+            ${subject.label}
+          </div>
+        `;
+      }).join("");
+      suspectPalette.querySelectorAll(".draggable-subject").forEach((subject) => {
+        subject.addEventListener("dragstart", (event) => {
+          event.dataTransfer.setData("text/plain", subject.dataset.subject);
+        });
+      });
+    }
+
+    function renderTextLine(text, lineIndex) {
+      const chars = Array.from(text);
+      const content = chars.map((char, index) => {
+        const gap = `<span class="gap" data-line="${lineIndex}" data-gap="${index}" title="斷句或補主詞位置"></span>`;
+        return `${gap}<span class="char" data-text="${char}"><span class="glyph">${char}</span><span class="note"></span></span>`;
+      }).join("");
+      return `
+        <div class="line">
+          ${content}<span class="gap" data-line="${lineIndex}" data-gap="${chars.length}" title="斷句或補主詞位置"></span>
+        </div>
+      `;
+    }
+
+    function renderAnswerSegments(marked = []) {
+      const round = rounds[currentRound];
+      const segments = round.translation.split("\n");
+      modelTranslation.innerHTML = segments.map((segment, index) => {
+        const markedClass = marked.includes(index) ? " marked" : "";
+        return `<span class="answer-segment${markedClass}" data-index="${index}">${escapeHtml(segment)}</span>`;
+      }).join("<br>");
+    }
+
+    function getPageKey(round = currentRound) {
+      return `section-1-round-${round}`;
+    }
+
+    function saveCurrentPageState() {
+      pageStates[getPageKey()] = {
+        poemHtml: poem.innerHTML,
+        studentTranslation: studentTranslation.value,
+        answerVisible: modelTranslation.classList.contains("visible"),
+        markedAnswer: Array.from(modelTranslation.querySelectorAll(".answer-segment.marked")).map((segment) => Number(segment.dataset.index)),
+        locked: studentTranslation.readOnly,
+        completed: Boolean(pageStates[getPageKey()]?.completed),
+        score: pageStates[getPageKey()]?.score || ""
+      };
+    }
+
+    function renderRound({ reset = false } = {}) {
+      const round = rounds[currentRound];
+      const state = reset ? null : pageStates[getPageKey()];
+      body.classList.toggle("round-1", currentRound === "1");
+      body.classList.toggle("round-2", currentRound === "2");
+      renderAnswerSegments(state?.markedAnswer || []);
+      modelTranslation.classList.toggle("visible", Boolean(state?.answerVisible));
+      answerTools.classList.toggle("visible", Boolean(state?.answerVisible));
+      selfAssessment.classList.toggle("visible", Boolean(state?.answerVisible));
+      selfAssessment.classList.toggle("scored", Boolean(state?.score));
+      studentTranslation.value = state?.studentTranslation || "";
+      studentTranslation.readOnly = Boolean(state?.locked);
+      scoreButtons.forEach((button) => button.classList.toggle("active", button.dataset.score === state?.score));
+      poem.innerHTML = state?.poemHtml || round.lines.map(renderTextLine).join("");
+      history.length = 0;
+      renderSubjectPalette();
+      updateCompareButton();
+    }
+
+    function setMode(mode) {
+      saveCurrentPageState();
+      currentMode = mode;
+      body.classList.remove("mode-detect", "mode-suspect", "mode-doubt", "mode-infer");
+      body.classList.add(`mode-${mode}`);
+      modeHint.textContent = hints[mode];
+      modelTranslation.classList.remove("visible");
+      answerTools.classList.remove("visible");
+      selfAssessment.classList.remove("visible");
+      strategyButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.mode === mode);
+      });
+      updateCompareButton();
+    }
+
+    function updateCompareButton() {
+      compareButton.disabled = currentMode !== "infer" || !studentTranslation.value.trim() || studentTranslation.readOnly;
+      clearButton.disabled = studentTranslation.readOnly;
+    }
+
+    function toggleSlash(gap) {
+      if (gap.classList.contains("has-subject")) return;
+      gap.classList.toggle("has-slash");
+      history.push({ type: "slash", node: gap });
+    }
+
+    function toggleClass(char, className) {
+      char.classList.toggle(className);
+      history.push({ type: "class", node: char, className });
+    }
+
+    function getCharLine(char) {
+      return char.closest(".line");
+    }
+
+    function getLineChars(char) {
+      return Array.from(getCharLine(char).querySelectorAll(".char"));
+    }
+
+    function getLineGaps(char) {
+      return Array.from(getCharLine(char).querySelectorAll(".gap"));
+    }
+
+    function getCharRange(start, end) {
+      if (!start || !end || getCharLine(start) !== getCharLine(end)) return [end || start].filter(Boolean);
+      const chars = getLineChars(start);
+      const startIndex = chars.indexOf(start);
+      const endIndex = chars.indexOf(end);
+      const from = Math.min(startIndex, endIndex);
+      const to = Math.max(startIndex, endIndex);
+      return chars.slice(from, to + 1);
+    }
+
+    function clearPending() {
+      pendingChars.forEach((char) => char.classList.remove("pending-clue"));
+      pendingChars = [];
+    }
+
+    function markPending(chars) {
+      clearPending();
+      pendingChars = chars;
+      pendingChars.forEach((char) => char.classList.add("pending-clue"));
+    }
+
+    function clearGroupClasses(char) {
+      char.classList.remove("group-start", "group-middle", "group-end");
+    }
+
+    function clearBridgeGaps(id) {
+      if (!id) return;
+      poem.querySelectorAll(`.gap[data-note-id="${id}"]`).forEach((gap) => {
+        gap.classList.remove("clue-bridge");
+        delete gap.dataset.noteId;
+      });
+    }
+
+    function applyGroupClasses(chars) {
+      chars.forEach((char, index) => {
+        clearGroupClasses(char);
+        if (chars.length === 1) return;
+        if (index === 0) char.classList.add("group-start");
+        else if (index === chars.length - 1) char.classList.add("group-end");
+        else char.classList.add("group-middle");
+      });
+    }
+
+    function applyBridgeGaps(chars, id) {
+      if (chars.length < 2) return;
+      const lineChars = getLineChars(chars[0]);
+      const gaps = getLineGaps(chars[0]);
+      const from = lineChars.indexOf(chars[0]);
+      const to = lineChars.indexOf(chars[chars.length - 1]);
+      for (let index = from + 1; index <= to; index += 1) {
+        const gap = gaps[index];
+        if (!gap || gap.classList.contains("has-subject") || gap.classList.contains("has-slash")) continue;
+        gap.classList.add("clue-bridge");
+        gap.dataset.noteId = id;
+      }
+    }
+
+    function getNoteGroup(char) {
+      const id = char.dataset.noteId;
+      if (!id) return [char];
+      return Array.from(poem.querySelectorAll(`.char[data-note-id="${id}"]`));
+    }
+
+    function commitNote() {
+      if (!editingChars.length) return;
+      const chars = editingChars;
+      const value = noteEditorInput.value.trim();
+      const first = chars[0];
+      chars.forEach((char) => {
+        char.classList.remove("pending-clue");
+        const note = char.querySelector(".note");
+        note.textContent = "";
+        note.style.transform = "";
+      });
+      if (!value) {
+        chars.forEach((char) => {
+          clearBridgeGaps(char.dataset.noteId);
+          char.classList.remove("clue-mark");
+          clearGroupClasses(char);
+          delete char.dataset.noteId;
+        });
+      } else {
+        const id = first.dataset.noteId || `note-${++noteCounter}`;
+        const noteIndex = Math.floor((chars.length - 1) / 2);
+        clearBridgeGaps(id);
+        chars.forEach((char) => {
+          char.classList.add("clue-mark");
+          char.dataset.noteId = id;
+        });
+        applyGroupClasses(chars);
+        applyBridgeGaps(chars, id);
+        const note = chars[noteIndex].querySelector(".note");
+        note.textContent = value;
+        const centerShift = ((chars.length - 1) / 2 - noteIndex) * 1.14;
+        note.style.transform = centerShift ? `translateX(${centerShift}em)` : "";
+      }
+      editingChars = [];
+      noteEditor.classList.remove("visible");
+    }
+
+    function editClueNote(chars) {
+      if (!chars.length) return;
+      const group = getNoteGroup(chars[0]);
+      const targetChars = group.length > 1 || group[0].dataset.noteId ? group : chars;
+      const first = targetChars[0];
+      const previousStates = targetChars.map((char) => ({
+        char,
+        note: char.querySelector(".note").textContent,
+        noteTransform: char.querySelector(".note").style.transform,
+        hadClue: char.classList.contains("clue-mark"),
+        noteId: char.dataset.noteId || "",
+        groupStart: char.classList.contains("group-start"),
+        groupMiddle: char.classList.contains("group-middle"),
+        groupEnd: char.classList.contains("group-end"),
+        bridgeGaps: char.dataset.noteId
+          ? Array.from(poem.querySelectorAll(`.gap[data-note-id="${char.dataset.noteId}"]`))
+          : []
+      }));
+      const previous = targetChars.map((char) => char.querySelector(".note").textContent).find(Boolean) || "";
+      const phrase = targetChars.map((char) => char.dataset.text).join("");
+      editingChars = targetChars;
+      noteEditorLabel.textContent = `「${phrase}」的解釋`;
+      noteEditorInput.value = previous;
+      noteEditor.classList.add("visible");
+      history.push({ type: "note", states: previousStates });
+      noteEditorInput.focus();
+      noteEditorInput.select();
+    }
+
+    function hasNote(char) {
+      return Boolean(char.dataset.noteId);
+    }
+
+    function fillSubjectGap(gap, subject) {
+      const previous = gap.innerHTML;
+      const hadSubject = gap.classList.contains("has-subject");
+      const hadSlash = gap.classList.contains("has-slash");
+      gap.innerHTML = renderSubjectIcon(subject);
+      gap.classList.add("has-subject");
+      gap.classList.remove("has-slash");
+      history.push({ type: "subject", node: gap, previous, hadSubject, hadSlash });
+    }
+
+    poem.addEventListener("click", (event) => {
+      const gap = event.target.closest(".gap");
+      const char = event.target.closest(".char");
+      if (currentMode === "detect" && gap) toggleSlash(gap);
+      if (currentMode === "suspect" && char) toggleClass(char, "circle-mark");
+    });
+
+    poem.addEventListener("dblclick", (event) => {
+      const char = event.target.closest(".char");
+      if (currentMode === "doubt" && char) {
+        editClueNote(getNoteGroup(char));
+        return;
+      }
+      const gap = event.target.closest(".gap.has-subject");
+      if (!gap) return;
+      const previous = gap.innerHTML;
+      gap.innerHTML = "";
+      gap.classList.remove("has-subject");
+      history.push({ type: "subject-remove", node: gap, previous });
+    });
+
+    poem.addEventListener("mousedown", (event) => {
+      if (currentMode !== "doubt") return;
+      const char = event.target.closest(".char");
+      if (!char) return;
+      selectionStart = char;
+      clearPending();
+    });
+
+    poem.addEventListener("mouseover", (event) => {
+      if (currentMode !== "doubt" || !selectionStart) return;
+      const char = event.target.closest(".char");
+      if (!char) return;
+      const selected = getCharRange(selectionStart, char);
+      if (selected.length > 1) markPending(selected);
+    });
+
+    poem.addEventListener("mouseup", (event) => {
+      if (currentMode !== "doubt" || !selectionStart) return;
+      const char = event.target.closest(".char") || selectionStart;
+      const selected = getCharRange(selectionStart, char);
+      selectionStart = null;
+      clearPending();
+      editClueNote(selected);
+    });
+
+    poem.addEventListener("dragover", (event) => {
+      if (currentMode !== "suspect") return;
+      if (!event.target.closest(".gap")) return;
+      event.preventDefault();
+    });
+
+    poem.addEventListener("drop", (event) => {
+      if (currentMode !== "suspect") return;
+      const gap = event.target.closest(".gap");
+      if (!gap) return;
+      event.preventDefault();
+      const subject = event.dataTransfer.getData("text/plain");
+      if (subject) fillSubjectGap(gap, subject);
+    });
+
+    strategyButtons.forEach((button) => {
+      button.addEventListener("click", () => setMode(button.dataset.mode));
+    });
+
+    roundButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        if (currentRound === button.dataset.round) return;
+        saveCurrentPageState();
+        currentRound = button.dataset.round;
+        roundButtons.forEach((item) => item.classList.toggle("active", item === button));
+        renderRound();
+      });
+    });
+
+    clearButton.addEventListener("click", () => {
+      if (clearButton.disabled) return;
+      delete pageStates[getPageKey()];
+      renderRound({ reset: true });
+      saveCurrentPageState();
+    });
+
+    compareButton.addEventListener("click", () => {
+      if (compareButton.disabled) return;
+      modelTranslation.classList.add("visible");
+      answerTools.classList.add("visible");
+      selfAssessment.classList.add("visible");
+      studentTranslation.readOnly = true;
+      pageStates[getPageKey()] = {
+        poemHtml: poem.innerHTML,
+        studentTranslation: studentTranslation.value,
+        answerVisible: true,
+        markedAnswer: Array.from(modelTranslation.querySelectorAll(".answer-segment.marked")).map((segment) => Number(segment.dataset.index)),
+        locked: true,
+        completed: true,
+        score: pageStates[getPageKey()]?.score || ""
+      };
+      saveCurrentPageState();
+      updateCompareButton();
+    });
+
+    scoreButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        if (!selfAssessment.classList.contains("visible")) return;
+        scoreButtons.forEach((item) => item.classList.toggle("active", item === button));
+        selfAssessment.classList.add("scored");
+        pageStates[getPageKey()] = {
+          ...(pageStates[getPageKey()] || {}),
+          poemHtml: poem.innerHTML,
+          studentTranslation: studentTranslation.value,
+          answerVisible: true,
+          locked: studentTranslation.readOnly,
+          completed: true,
+          score: button.dataset.score
+        };
+      });
+    });
+
+    answerToolButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        answerTool = button.dataset.tool;
+        answerToolButtons.forEach((item) => item.classList.toggle("active", item === button));
+      });
+    });
+
+    modelTranslation.addEventListener("click", (event) => {
+      const segment = event.target.closest(".answer-segment");
+      if (!segment || !modelTranslation.classList.contains("visible")) return;
+      segment.classList.toggle("marked", answerTool === "highlight");
+      if (answerTool === "erase") segment.classList.remove("marked");
+      saveCurrentPageState();
+    });
+
+    studentTranslation.addEventListener("input", () => {
+      updateCompareButton();
+      saveCurrentPageState();
+    });
+
+    function escapeHtml(text) {
+      return text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function buildLearningRecordHtml() {
+      saveCurrentPageState();
+      const pageOrder = [
+        { key: "section-1-round-1", title: "木蘭詩 第一節 1" },
+        { key: "section-1-round-2", title: "木蘭詩 第一節 2" }
+      ];
+      const completed = pageOrder
+        .map((page) => ({ ...page, state: pageStates[page.key] }))
+        .filter((page) => page.state?.completed);
+
+      if (!completed.length) return "";
+
+      function renderRecordAnswer(page) {
+        const round = rounds[page.key.endsWith("1") ? 1 : 2];
+        const marked = page.state.markedAnswer || [];
+        return round.translation.split("\n").map((segment, index) => {
+          const markedClass = marked.includes(index) ? " marked" : "";
+          return `<span class="answer-segment${markedClass}">${escapeHtml(segment)}</span>`;
+        }).join("<br>");
+      }
+
+      return completed.map((page) => `
+        <section class="record-page">
+          <h1>${page.title}</h1>
+          <div class="record-poem">${page.state.poemHtml}</div>
+          <h2>學生翻譯</h2>
+          <div class="record-translation">${escapeHtml(page.state.studentTranslation)}</div>
+          <h2>正確版翻譯</h2>
+          <div class="record-answer">${renderRecordAnswer(page)}</div>
+          <h2>自我評估</h2>
+          <div class="record-score">${page.state.score ? `${page.state.score}%` : "未選擇"}</div>
+        </section>
+      `).join("");
+    }
+
+    function downloadLearningRecord() {
+      const content = buildLearningRecordHtml();
+      if (!content) {
+        alert("目前沒有已完成的頁面。請先完成翻譯並按下「翻譯比對」。");
+        return;
+      }
+
+      const printWindow = window.open("", "_blank");
+      printWindow.document.write(`
+        <!doctype html>
+        <html lang="zh-Hant">
+        <head>
+          <meta charset="utf-8">
+          <title>木蘭詩學習歷程</title>
+          <style>
+            body {
+              margin: 0;
+              color: #24211e;
+              background: #fffdf7;
+              font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+            }
+            .record-page {
+              page-break-after: always;
+              padding: 28px 34px;
+            }
+            h1 {
+              margin: 0 0 18px;
+              font-size: 28px;
+            }
+            h2 {
+              margin: 20px 0 8px;
+              color: #6d4b92;
+              font-size: 18px;
+            }
+            .record-poem {
+              border: 1px solid #dfd3bd;
+              border-radius: 8px;
+              padding: 18px;
+              font-family: "Songti TC", "Noto Serif TC", "PMingLiU", serif;
+              font-size: 30px;
+              line-height: 1.22;
+            }
+            .line {
+              display: flex;
+              align-items: center;
+              flex-wrap: wrap;
+              gap: 0;
+              min-height: 1.7em;
+            }
+            .char {
+              position: relative;
+              display: inline-grid;
+              grid-template-rows: auto minmax(.58em, auto);
+              justify-items: center;
+              min-width: .9em;
+              border-radius: 7px;
+            }
+            .note {
+              grid-row: 2;
+              min-height: .58em;
+              color: #315f9f;
+              font: 800 .31em/1.05 "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+              white-space: nowrap;
+            }
+            .gap {
+              display: inline-flex;
+              justify-content: center;
+              align-items: center;
+              width: .24em;
+              flex: 0 0 .24em;
+              min-height: 1.18em;
+              color: #bd2f32;
+              font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+              font-weight: 900;
+            }
+            .gap.has-slash::before { content: "/"; }
+            .gap.has-subject {
+              width: 1.08em;
+              height: 1.08em;
+              flex-basis: 1.08em;
+              margin: 0 .06em;
+              border: 2px solid #bd2f32;
+              border-radius: 999px;
+              background: #fff;
+              overflow: hidden;
+              transform: translateY(-.12em);
+            }
+            .subject-icon {
+              width: 100%;
+              height: 100%;
+              border-radius: 999px;
+              object-fit: contain;
+            }
+            .shadow-icon {
+              display: inline-block;
+              width: 74%;
+              height: 74%;
+              border-radius: 999px;
+              background:
+                radial-gradient(circle at 50% 28%, #111 0 24%, transparent 25%),
+                linear-gradient(#111 0 0) 50% 82% / 62% 46% no-repeat;
+            }
+            .clue-mark { background: rgba(49, 95, 159, .1); }
+            .clue-mark.group-start {
+              border-top-right-radius: 0;
+              border-bottom-right-radius: 0;
+            }
+            .clue-mark.group-middle { border-radius: 0; }
+            .clue-mark.group-end {
+              border-top-left-radius: 0;
+              border-bottom-left-radius: 0;
+            }
+            .gap.clue-bridge {
+              align-self: stretch;
+              min-height: 0;
+              border-radius: 0;
+              background: rgba(49, 95, 159, .1);
+            }
+            .record-translation,
+            .record-answer,
+            .record-score {
+              min-height: 90px;
+              border: 1px solid #dfd3bd;
+              border-radius: 8px;
+              padding: 14px;
+              white-space: pre-wrap;
+              font-size: 18px;
+              line-height: 1.55;
+            }
+            .record-score {
+              min-height: 0;
+              color: #6d4b92;
+              font-size: 24px;
+              font-weight: 900;
+            }
+            .answer-segment.marked {
+              border-radius: 4px;
+              background: #fff176;
+              box-shadow: inset 0 -.18em 0 rgba(255, 193, 7, .55);
+            }
+          </style>
+        </head>
+        <body>${content}</body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => printWindow.print(), 300);
+    }
+
+    downloadButton.addEventListener("click", downloadLearningRecord);
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "1") roundButtons[0].click();
+      if (event.key === "2") roundButtons[1].click();
+    });
+
+    noteEditorInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        commitNote();
+      }
+      if (event.key === "Escape") {
+        noteEditor.classList.remove("visible");
+        editingChars = [];
+      }
+    });
+
+    noteEditorInput.addEventListener("blur", () => {
+      if (editingChars.length) commitNote();
+    });
+
+    renderRound();
+    updateCompareButton();
+  </script>
+</body>
+</html>
