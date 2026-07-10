@@ -1385,18 +1385,29 @@
 
     function buildLearningRecordHtml() {
       saveCurrentPageState();
-      const pageOrder = [
-        { key: "section-1-round-1", title: "木蘭詩 第一節 1" },
-        { key: "section-1-round-2", title: "木蘭詩 第一節 2" }
-      ];
-      const completed = pageOrder
-        .map((page) => ({ ...page, state: pageStates[page.key] }))
-        .filter((page) => page.state?.completed);
+      const assetBaseUrl = new URL(".", window.location.href);
+      const completed = Object.entries(pageStates)
+        .map(([key, state]) => {
+          const match = key.match(/^section-(\d+)-round-(\d+)$/);
+          if (!match) return null;
+          const section = Number(match[1]);
+          const round = Number(match[2]);
+          return {
+            key,
+            section,
+            round,
+            title: `木蘭詩 第${section}節 ${round}`,
+            state
+          };
+        })
+        .filter((page) => page?.state?.completed)
+        .sort((a, b) => a.section - b.section || a.round - b.round);
 
       if (!completed.length) return "";
 
       function renderRecordAnswer(page) {
-        const round = rounds[page.key.endsWith("1") ? 1 : 2];
+        const round = rounds[page.round];
+        if (!round) return "";
         const marked = page.state.markedAnswer || [];
         return round.translation.split("\n").map((segment, index) => {
           const markedClass = marked.includes(index) ? " marked" : "";
@@ -1408,7 +1419,7 @@
         <section class="record-page">
           <h1>${page.title}</h1>
           <div class="record-student">班級座號：${escapeHtml(page.state.studentId || "")}</div>
-          <div class="record-poem">${page.state.poemHtml}</div>
+          <div class="record-poem">${page.state.poemHtml.replaceAll('src="', `src="${assetBaseUrl.href}`)}</div>
           <h2>學生翻譯</h2>
           <div class="record-translation">${escapeHtml(page.state.studentTranslation)}</div>
           <h2>正確版翻譯</h2>
@@ -1434,6 +1445,10 @@
           <meta charset="utf-8">
           <title>木蘭詩學習歷程</title>
           <style>
+            * {
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
             body {
               margin: 0;
               color: #24211e;
@@ -1519,7 +1534,7 @@
               object-fit: contain;
             }
             .shadow-icon {
-              display: inline-block;
+              display: block;
               width: 74%;
               height: 74%;
               border-radius: 999px;
