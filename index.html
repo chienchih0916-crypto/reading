@@ -162,7 +162,26 @@
 
     body.round-2 .note {
       min-height: .5em;
-      font-size: .28em;
+      font-size: .34em;
+    }
+
+    body.section-4 .text-panel {
+      padding: clamp(12px, 1.5vw, 24px);
+    }
+
+    body.section-4 .poem {
+      gap: clamp(8px, 1vw, 16px);
+      font-size: clamp(24px, 3vw, 48px);
+      line-height: 1.08;
+    }
+
+    body.section-4 .line {
+      min-height: 1.36em;
+    }
+
+    body.section-4 .note {
+      min-height: .48em;
+      font-size: .34em;
     }
 
     body.mode-infer .text-panel {
@@ -212,7 +231,7 @@
       grid-row: 2;
       min-height: .58em;
       color: var(--blue);
-      font: 800 .31em/1.05 "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      font: 800 .38em/1.05 "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
       white-space: nowrap;
     }
 
@@ -578,6 +597,10 @@
       gap: 10px;
     }
 
+    .round-controls[hidden] {
+      display: none;
+    }
+
     .round-button,
     .section-button,
     .tool-button,
@@ -771,7 +794,7 @@
 
     <header class="lesson-head">
       <div class="title-group">
-        <h1>木蘭詩 第一節</h1>
+        <h1 id="lessonTitle">木蘭詩 第一節</h1>
         <div class="round-controls" aria-label="第一節文本回合">
           <button class="round-button active" type="button" data-round="1">1</button>
           <button class="round-button" type="button" data-round="2">2</button>
@@ -820,12 +843,12 @@
 
     <footer class="control-bar">
       <div class="section-controls" aria-label="章節導覽">
-        <button class="section-button active" type="button">第一節</button>
-        <button class="section-button" type="button" disabled>第二節</button>
-        <button class="section-button" type="button" disabled>第三節</button>
-        <button class="section-button" type="button" disabled>第四節</button>
-        <button class="section-button" type="button" disabled>第五節</button>
-        <button class="section-button" type="button" disabled>第六節</button>
+        <button class="section-button active" type="button" data-section="1">第一節</button>
+        <button class="section-button" type="button" data-section="2">第二節</button>
+        <button class="section-button" type="button" data-section="3">第三節</button>
+        <button class="section-button" type="button" data-section="4">第四節</button>
+        <button class="section-button" type="button" data-section="5">第五節</button>
+        <button class="section-button" type="button" data-section="6">第六節</button>
       </div>
 
       <div class="suspect-palette" id="suspectPalette" aria-label="主詞拖曳工具"></div>
@@ -838,8 +861,18 @@
   </main>
 
   <script>
-    const rounds = {
+    const sectionNames = {
+      1: "第一節",
+      2: "第二節",
+      3: "第三節",
+      4: "第四節",
+      5: "第五節",
+      6: "第六節"
+    };
+
+    const sections = {
       1: {
+        1: {
         label: "第一回合：背景交代、提問",
         lines: [
           "唧唧復唧唧，木蘭當戶織。",
@@ -859,11 +892,87 @@
         ],
         translation: "木蘭回答：「我也沒有想什麼，也沒有惦記什麼。\n昨晚看見徵兵的文書，可汗正在大規模徵兵。\n徵兵名冊有很多卷，每一卷都有父親的名字。\n父親沒有長大成人的兒子，木蘭也沒有兄長。\n我願意為此去買鞍馬，從今以後代替父親出征。」"
       }
+      },
+      2: {
+        1: {
+          label: "第一回合",
+          lines: [
+            "東市買駿馬，西市買鞍韉，",
+            "南市買轡頭，北市買長鞭。"
+          ],
+          translation: "木蘭到東市買駿馬，到西市買馬鞍和鞍墊，\n到南市買嚼子和韁繩，到北市買長鞭。"
+        },
+        2: {
+          label: "第二回合",
+          lines: [
+            "朝辭爺孃去，暮宿黃河邊，",
+            "不聞爺孃喚女聲，但聞黃河流水鳴濺濺。",
+            "旦辭黃河去，暮至黑山頭，",
+            "不聞爺孃喚女聲，但聞燕山胡騎聲啾啾。"
+          ],
+          translation: "早晨辭別父母離家，晚上住宿在黃河邊，\n聽不見父母呼喚女兒的聲音，\n只聽見黃河流水濺濺作響。\n早晨離開黃河，晚上到達黑山頭，\n聽不見父母呼喚女兒的聲音，\n只聽見燕山胡人的戰馬啾啾鳴叫。"
+        }
+      },
+      3: {
+        1: {
+          label: "全文",
+          lines: [
+            "萬里赴戎機，關山度若飛。",
+            "朔氣傳金柝，寒光照鐵衣。",
+            "將軍百戰死，壯士十年歸。"
+          ],
+          translation: "木蘭奔赴萬里外的戰場，翻越關塞山嶺像飛一樣迅速。\n北方寒氣中傳來打更的金柝聲，清冷月光照著戰士的鎧甲。\n將軍和壯士歷經多年征戰，有人戰死，有人歸來。"
+        }
+      },
+      4: {
+        1: {
+          label: "全文",
+          lines: [
+            "歸來見天子，天子坐明堂。",
+            "策勳十二轉，賞賜百千強。",
+            "可汗問所欲，「木蘭不用尚書郎，",
+            "願借明駝千里足，送兒還故鄉。」"
+          ],
+          translation: "木蘭歸來拜見天子，天子坐在明堂上。\n記功很多次，賞賜非常豐厚。\n可汗問木蘭想要什麼，木蘭說：「我不願做尚書郎，\n只願借一匹能日行千里的駱駝，送我回故鄉。」"
+        }
+      },
+      5: {
+        1: {
+          label: "第一回合",
+          lines: [
+            "爺孃聞女來，出郭相扶將。",
+            "阿姊聞妹來，當戶理紅妝。",
+            "小弟聞姊來，磨刀霍霍向豬羊。"
+          ],
+          translation: "父母聽說女兒回來了，互相攙扶著出城迎接。\n姊姊聽說妹妹回來了，對著門整理美麗的妝容。\n弟弟聽說姊姊回來了，霍霍地磨刀準備殺豬宰羊。"
+        },
+        2: {
+          label: "第二回合",
+          lines: [
+            "開我東閣門，坐我西閣床。",
+            "脫我戰時袍，著我舊時裳。",
+            "當窗理雲鬢，對鏡貼花黃。",
+            "出門看火伴，火伴皆驚惶：",
+            "「同行十二年，不知木蘭是女郎。」"
+          ],
+          translation: "木蘭打開東閣的門，坐在西閣的床上。\n脫下戰時穿的袍服，換上從前的衣裳。\n對著窗整理雲一般的鬢髮，照著鏡子貼上花黃。\n出門去看同行的夥伴，夥伴們都十分驚訝：\n「同行十二年，竟不知道木蘭是女子。」"
+        }
+      },
+      6: {
+        1: {
+          label: "全文",
+          lines: [
+            "雄兔腳撲朔，雌兔眼迷離。",
+            "兩兔傍地走，安能辨我是雄雌？"
+          ],
+          translation: "雄兔的腳常常動彈，雌兔的眼睛常常瞇著。\n兩隻兔子貼著地面一起奔跑，怎麼能分辨我是雄是雌呢？"
+        }
+      }
     };
 
     const hints = {
       detect: "斷句：點選字與字之間的空隙，畫上或取消 Slash /",
-      suspect: "圈補主詞：拖曳主詞圖像到句中，補出隱藏的主詞。",
+      suspect: "圈補主詞：圈選主詞或拖曳主詞圖像到句中，補出隱藏的主詞。",
       doubt: "推論：點選難詞、代詞，利用換字、加字、上下文推論字義。",
       infer: "加字翻譯：請完整翻譯後，再按下翻譯比對，並為自己評分"
     };
@@ -885,11 +994,15 @@
     const answerToolButtons = Array.from(document.querySelectorAll(".answer-tool"));
     const scoreButtons = Array.from(document.querySelectorAll(".score-button"));
     const suspectPalette = document.getElementById("suspectPalette");
+    const lessonTitle = document.getElementById("lessonTitle");
     const strategyButtons = Array.from(document.querySelectorAll(".strategy-button"));
+    const sectionButtons = Array.from(document.querySelectorAll(".section-button"));
+    const roundControls = document.querySelector(".round-controls");
     const roundButtons = Array.from(document.querySelectorAll(".round-button"));
     const history = [];
     const pageStates = {};
     let currentMode = "detect";
+    let currentSection = "1";
     let currentRound = "1";
     let editingChars = [];
     let noteCounter = 0;
@@ -901,11 +1014,15 @@
     const subjects = {
       mulan: {
         label: "木蘭",
-        icon: '<img class="subject-icon" src="mulan.png" alt="木蘭">'
+        icon: '<img class="subject-icon" src="mulan-head.png" alt="木蘭">'
+      },
+      mulanCompanions: {
+        label: "木蘭與火伴",
+        icon: '<img class="subject-icon" src="mulan-head.png" alt="木蘭與火伴">'
       },
       shadow: {
-        label: "黑衣人",
-        icon: '<span class="shadow-icon" aria-label="黑衣人"></span>'
+        label: "敘事者(旁白)",
+        icon: '<img class="subject-icon" src="shadow.png" alt="敘事者(旁白)">'
       },
       father: {
         label: "父親",
@@ -915,6 +1032,38 @@
         label: "可汗",
         icon: '<img class="subject-icon" src="khan.png" alt="可汗">'
       },
+      emperor: {
+        label: "天子",
+        icon: '<img class="subject-icon" src="khan.png" alt="天子">'
+      },
+      parents: {
+        label: "父與母",
+        icon: '<img class="subject-icon" src="parents.png" alt="父與母">'
+      },
+      family: {
+        label: "家人",
+        icon: '<img class="subject-icon" src="parents.png" alt="家人">'
+      },
+      elderSister: {
+        label: "姊姊",
+        icon: '<img class="subject-icon" src="elder-sister.png" alt="姊姊">'
+      },
+      youngerBrother: {
+        label: "弟弟",
+        icon: '<img class="subject-icon" src="younger-brother.png" alt="弟弟">'
+      },
+      companion: {
+        label: "火伴",
+        icon: '<img class="subject-icon" src="火伴new.png" alt="火伴">'
+      },
+      maleRabbit: {
+        label: "雄兔",
+        icon: '<img class="subject-icon" src="雄兔-正面-去背.png" alt="雄兔">'
+      },
+      femaleRabbit: {
+        label: "雌兔",
+        icon: '<img class="subject-icon" src="雌兔-正面-去背.png" alt="雌兔">'
+      },
       document: {
         label: "軍書",
         icon: '<img class="subject-icon" src="scroll.png" alt="軍書">'
@@ -922,9 +1071,24 @@
     };
 
     const roundSubjects = {
-      1: ["mulan", "shadow"],
-      2: ["mulan", "father", "khan", "document"]
+      "1-1": ["mulan", "family", "shadow"],
+      "1-2": ["mulan", "father", "khan", "document"],
+      "2-1": ["mulan", "father", "khan"],
+      "2-2": ["mulan", "father", "khan"],
+      "3-1": ["mulanCompanions"],
+      "4-1": ["mulan", "emperor", "father"],
+      "5-1": ["parents", "elderSister", "youngerBrother"],
+      "5-2": ["mulan", "companion"],
+      "6-1": ["companion", "maleRabbit", "femaleRabbit"]
     };
+
+    function getCurrentRoundData() {
+      return sections[currentSection][currentRound];
+    }
+
+    function getSectionRounds(section = currentSection) {
+      return Object.keys(sections[section]);
+    }
 
     function renderSubjectIcon(subject) {
       return subjects[subject]?.icon || "";
@@ -959,7 +1123,8 @@
     }
 
     function renderSubjectPalette() {
-      suspectPalette.innerHTML = roundSubjects[currentRound].map((key) => {
+      const subjectKeys = roundSubjects[`${currentSection}-${currentRound}`] || ["mulan"];
+      suspectPalette.innerHTML = subjectKeys.map((key) => {
         const subject = subjects[key];
         return `
           <div class="draggable-subject" draggable="true" data-subject="${key}">
@@ -990,7 +1155,7 @@
     }
 
     function renderAnswerSegments(marked = []) {
-      const round = rounds[currentRound];
+      const round = getCurrentRoundData();
       const segments = round.translation.split("\n");
       modelTranslation.innerHTML = segments.map((segment, index) => {
         const markedClass = marked.includes(index) ? " marked" : "";
@@ -998,8 +1163,8 @@
       }).join("<br>");
     }
 
-    function getPageKey(round = currentRound) {
-      return `section-1-round-${round}`;
+    function getPageKey(section = currentSection, round = currentRound) {
+      return `section-${section}-round-${round}`;
     }
 
     function saveCurrentPageState() {
@@ -1016,8 +1181,11 @@
     }
 
     function renderRound({ reset = false } = {}) {
-      const round = rounds[currentRound];
+      const round = getCurrentRoundData();
       const state = reset ? null : pageStates[getPageKey()];
+      lessonTitle.textContent = `木蘭詩 ${sectionNames[currentSection]}`;
+      body.classList.remove("section-1", "section-2", "section-3", "section-4", "section-5", "section-6");
+      body.classList.add(`section-${currentSection}`);
       body.classList.toggle("round-1", currentRound === "1");
       body.classList.toggle("round-2", currentRound === "2");
       renderAnswerSegments(state?.markedAnswer || []);
@@ -1034,6 +1202,16 @@
       history.length = 0;
       renderSubjectPalette();
       updateCompareButton();
+    }
+
+    function renderRoundControls() {
+      const roundsForSection = getSectionRounds();
+      roundControls.hidden = roundsForSection.length <= 1;
+      roundButtons.forEach((button) => {
+        const enabled = roundsForSection.includes(button.dataset.round);
+        button.hidden = !enabled;
+        button.classList.toggle("active", button.dataset.round === currentRound);
+      });
     }
 
     function setMode(mode) {
@@ -1299,10 +1477,23 @@
 
     roundButtons.forEach((button) => {
       button.addEventListener("click", () => {
+        if (button.hidden) return;
         if (currentRound === button.dataset.round) return;
         saveCurrentPageState();
         currentRound = button.dataset.round;
-        roundButtons.forEach((item) => item.classList.toggle("active", item === button));
+        renderRoundControls();
+        renderRound();
+      });
+    });
+
+    sectionButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        if (currentSection === button.dataset.section) return;
+        saveCurrentPageState();
+        currentSection = button.dataset.section;
+        currentRound = "1";
+        sectionButtons.forEach((item) => item.classList.toggle("active", item === button));
+        renderRoundControls();
         renderRound();
       });
     });
@@ -1406,7 +1597,7 @@
       if (!completed.length) return "";
 
       function renderRecordAnswer(page) {
-        const round = rounds[page.round];
+        const round = sections[page.section]?.[page.round];
         if (!round) return "";
         const marked = page.state.markedAnswer || [];
         return round.translation.split("\n").map((segment, index) => {
@@ -1625,6 +1816,7 @@
       if (editingChars.length) commitNote();
     });
 
+    renderRoundControls();
     renderRound();
     updateCompareButton();
   </script>
