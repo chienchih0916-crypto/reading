@@ -42,10 +42,11 @@
 
     .strategy-bar {
       display: grid;
-      grid-template-columns: repeat(4, minmax(150px, 1fr));
+      grid-template-columns: minmax(180px, 1.1fr) repeat(4, minmax(150px, 1fr));
       gap: 12px;
     }
 
+    .training-button,
     .strategy-button,
     .round-button,
     .section-button,
@@ -57,12 +58,54 @@
       cursor: pointer;
     }
 
+    .training-button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 70px;
+      padding: 10px 14px;
+      color: #fff;
+      background: #514b43;
+      text-decoration: none;
+      box-shadow: 0 8px 18px rgba(57, 46, 31, .12);
+    }
+
+    .training-button strong {
+      font-size: clamp(20px, 1.7vw, 28px);
+      line-height: 1.1;
+    }
+
+    .training-icon {
+      display: block;
+      flex: 0 0 auto;
+      width: clamp(30px, 3vw, 42px);
+      height: clamp(30px, 3vw, 42px);
+      object-fit: contain;
+    }
+
     .strategy-button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       min-height: 70px;
       padding: 10px 14px;
       color: #fff;
       text-align: left;
       box-shadow: 0 8px 18px rgba(57, 46, 31, .12);
+    }
+
+    .strategy-index {
+      display: inline-grid;
+      flex: 0 0 34px;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border: 2px solid rgba(255, 255, 255, .82);
+      border-radius: 50%;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1;
     }
 
     .strategy-button strong {
@@ -778,16 +821,24 @@
 <body class="mode-detect">
   <main class="app">
     <nav class="strategy-bar" aria-label="閱讀策略歷程">
+      <a class="training-button" href="偵探訓練中心.html">
+        <img class="training-icon" src="偵探訓練中心-icon.png" alt="">
+        <strong>偵探訓練中心</strong>
+      </a>
       <button class="strategy-button detect active" type="button" data-mode="detect">
+        <span class="strategy-index">1</span>
         <strong>抽絲剝繭</strong>
       </button>
       <button class="strategy-button suspect" type="button" data-mode="suspect">
+        <span class="strategy-index">2</span>
         <strong>誰是嫌疑人？</strong>
       </button>
       <button class="strategy-button doubt" type="button" data-mode="doubt">
+        <span class="strategy-index">3</span>
         <strong>分析疑點</strong>
       </button>
       <button class="strategy-button infer" type="button" data-mode="infer">
+        <span class="strategy-index">4</span>
         <strong>推理事件經過</strong>
       </button>
     </nav>
@@ -879,7 +930,7 @@
           "不聞機杼聲，惟聞女嘆息。",
           "問女何所思？問女何所憶？"
         ],
-        translation: "織布機唧唧又唧唧地響著，木蘭正對著門織布。\n聽不見織布機的聲音，只聽見木蘭在嘆息。\n問木蘭在想什麼？問木蘭在惦記什麼？"
+        translation: "「唧唧！唧唧！」不斷傳來織布機的聲音，木蘭正對著門織布。\n突然聽不到織布機的聲音，只聽到女兒的嘆息聲。\n問女兒正在想什麼？問女兒正在回憶什麼？"
       },
       2: {
         label: "第二回合：木蘭回答",
@@ -890,7 +941,7 @@
           "阿爺無大兒，木蘭無長兄，",
           "願為市鞍馬，從此替爺征。」"
         ],
-        translation: "木蘭回答：「我也沒有想什麼，也沒有惦記什麼。\n昨晚看見徵兵的文書，可汗正在大規模徵兵。\n徵兵名冊有很多卷，每一卷都有父親的名字。\n父親沒有長大成人的兒子，木蘭也沒有兄長。\n我願意為此去買鞍馬，從今以後代替父親出征。」"
+        translation: "木蘭回答說：「女兒沒有想什麼，女兒沒有回憶什麼。\n昨晚看見徵兵的文書，知道君王正在大規模的徵兵，\n在接二連三的召集令中，每一卷都有父親的名字。\n父親沒有大兒子，木蘭沒有長兄，\n我願意為了父親去購買鞍韉、馬匹，從此代替父親出征。」"
       }
       },
       2: {
@@ -900,7 +951,7 @@
             "東市買駿馬，西市買鞍韉，",
             "南市買轡頭，北市買長鞭。"
           ],
-          translation: "木蘭到東市買駿馬，到西市買馬鞍和鞍墊，\n到南市買嚼子和韁繩，到北市買長鞭。"
+          translation: "到東市買強壯的好馬，到西市買馬鞍和墊子，到南市買轡頭，到北市買長鞭。"
         },
         2: {
           label: "第二回合",
@@ -910,7 +961,7 @@
             "旦辭黃河去，暮至黑山頭，",
             "不聞爺孃喚女聲，但聞燕山胡騎聲啾啾。"
           ],
-          translation: "早晨辭別父母離家，晚上住宿在黃河邊，\n聽不見父母呼喚女兒的聲音，\n只聽見黃河流水濺濺作響。\n早晨離開黃河，晚上到達黑山頭，\n聽不見父母呼喚女兒的聲音，\n只聽見燕山胡人的戰馬啾啾鳴叫。"
+          translation: "早晨才辭別了父母，晚上已住在黃河旁邊，聽不到父母呼喚女兒的聲音，只聽到黃河濺濺的流水聲。\n天亮離開黃河，天黑就抵達黑山山頭，聽不到父母呼喚女兒的聲音，只聽到燕山敵人馬匹啾啾的叫聲。"
         }
       },
       3: {
@@ -921,7 +972,7 @@
             "朔氣傳金柝，寒光照鐵衣。",
             "將軍百戰死，壯士十年歸。"
           ],
-          translation: "木蘭奔赴萬里外的戰場，翻越關塞山嶺像飛一樣迅速。\n北方寒氣中傳來打更的金柝聲，清冷月光照著戰士的鎧甲。\n將軍和壯士歷經多年征戰，有人戰死，有人歸來。"
+          translation: "奔赴萬里之外的戰場，像飛一樣的度過重重關塞與山嶺。\n在北方的寒氣籠罩下傳來陣陣打更聲，星月的寒光照在鐵甲戰袍上。\n將軍和戰士都身經百戰、死傷慘重，多年後歸來都成了英雄。"
         }
       },
       4: {
@@ -933,7 +984,7 @@
             "可汗問所欲，「木蘭不用尚書郎，",
             "願借明駝千里足，送兒還故鄉。」"
           ],
-          translation: "木蘭歸來拜見天子，天子坐在明堂上。\n記功很多次，賞賜非常豐厚。\n可汗問木蘭想要什麼，木蘭說：「我不願做尚書郎，\n只願借一匹能日行千里的駱駝，送我回故鄉。」"
+          translation: "歸來晉見君王，君王高坐明堂。\n依照所記的功勳升到極高的職位，賞賜超過成千上百的金帛。\n君王問木蘭還有什麼願望？「木蘭無意擔任高官，只希望借我一匹日行千里的精壯駱駝，送我早日回故鄉。」"
         }
       },
       5: {
@@ -944,7 +995,7 @@
             "阿姊聞妹來，當戶理紅妝。",
             "小弟聞姊來，磨刀霍霍向豬羊。"
           ],
-          translation: "父母聽說女兒回來了，互相攙扶著出城迎接。\n姊姊聽說妹妹回來了，對著門整理美麗的妝容。\n弟弟聽說姊姊回來了，霍霍地磨刀準備殺豬宰羊。"
+          translation: "父母聽到女兒回來，相互扶持著走出外城去迎接。\n姐姐聽到妹妹回來，對著門梳妝打扮。\n弟弟聽到姐姐回來，趕緊磨刀宰殺豬羊。"
         },
         2: {
           label: "第二回合",
@@ -955,7 +1006,7 @@
             "出門看火伴，火伴皆驚惶：",
             "「同行十二年，不知木蘭是女郎。」"
           ],
-          translation: "木蘭打開東閣的門，坐在西閣的床上。\n脫下戰時穿的袍服，換上從前的衣裳。\n對著窗整理雲一般的鬢髮，照著鏡子貼上花黃。\n出門去看同行的夥伴，夥伴們都十分驚訝：\n「同行十二年，竟不知道木蘭是女子。」"
+          translation: "打開我臥室東邊的門，坐上我臥室西邊的床。\n脫去我戰時的衣袍，穿上我從前的衣裳。\n對著窗整理捲曲如雲的鬢髮，對著鏡子在額頭貼上花黃。\n出門見軍中的同伴，同伴們都驚訝的說：「一起生活了多年，竟然不知木蘭是女郎。」"
         }
       },
       6: {
@@ -965,7 +1016,7 @@
             "雄兔腳撲朔，雌兔眼迷離。",
             "兩兔傍地走，安能辨我是雄雌？"
           ],
-          translation: "雄兔的腳常常動彈，雌兔的眼睛常常瞇著。\n兩隻兔子貼著地面一起奔跑，怎麼能分辨我是雄是雌呢？"
+          translation: "雄兔的腳步跳躍，雌兔的目光模糊。\n當兩兔靠在一起奔跑時，怎麼能夠辨別雄雌呢？"
         }
       }
     };
@@ -973,7 +1024,7 @@
     const hints = {
       detect: "斷句：點選字與字之間的空隙，畫上或取消 Slash /",
       suspect: "圈補主詞：圈選主詞或拖曳主詞圖像到句中，補出隱藏的主詞。",
-      doubt: "推論：點選難詞、代詞，利用換字、加字、上下文推論字義。",
+      doubt: "推論字義：點選難詞、代詞，利用換字、加字、部首、上下文來推論。",
       infer: "加字翻譯：請完整翻譯後，再按下翻譯比對，並為自己評分"
     };
 
@@ -996,14 +1047,31 @@
     const suspectPalette = document.getElementById("suspectPalette");
     const lessonTitle = document.getElementById("lessonTitle");
     const strategyButtons = Array.from(document.querySelectorAll(".strategy-button"));
+    const trainingCenterLink = document.querySelector(".training-button");
     const sectionButtons = Array.from(document.querySelectorAll(".section-button"));
     const roundControls = document.querySelector(".round-controls");
     const roundButtons = Array.from(document.querySelectorAll(".round-button"));
     const history = [];
-    const pageStates = {};
-    let currentMode = "detect";
-    let currentSection = "1";
-    let currentRound = "1";
+    const pageStateStorageKey = "mulan-poem-reading-page-states-session-v2";
+    const viewStateStorageKey = "mulan-poem-reading-view-session-v1";
+    const navigationEntry = performance.getEntriesByType("navigation")[0];
+    const isPageReload = navigationEntry?.type === "reload" || performance.navigation?.type === 1;
+    let pageStates = {};
+    let savedViewState = {};
+    try {
+      if (isPageReload) {
+        sessionStorage.removeItem(pageStateStorageKey);
+        sessionStorage.removeItem(viewStateStorageKey);
+      }
+      pageStates = JSON.parse(sessionStorage.getItem(pageStateStorageKey) || "{}");
+      savedViewState = JSON.parse(sessionStorage.getItem(viewStateStorageKey) || "{}");
+    } catch (error) {
+      pageStates = {};
+      savedViewState = {};
+    }
+    let currentMode = hints[savedViewState.mode] ? savedViewState.mode : "detect";
+    let currentSection = sections[savedViewState.section] ? savedViewState.section : "1";
+    let currentRound = sections[currentSection]?.[savedViewState.round] ? savedViewState.round : "1";
     let editingChars = [];
     let noteCounter = 0;
     let selectionStart = null;
@@ -1168,30 +1236,49 @@
     }
 
     function saveCurrentPageState() {
-      pageStates[getPageKey()] = {
+      const pageKey = getPageKey();
+      const previousState = pageStates[pageKey] || {};
+      pageStates[pageKey] = {
         poemHtml: poem.innerHTML,
         studentTranslation: studentTranslation.value,
         studentId: studentId.value,
-        answerVisible: modelTranslation.classList.contains("visible"),
+        answerVisible: modelTranslation.classList.contains("visible") || Boolean(previousState.completed || previousState.locked),
         markedAnswer: Array.from(modelTranslation.querySelectorAll(".answer-segment.marked")).map((segment) => Number(segment.dataset.index)),
         locked: studentTranslation.readOnly,
-        completed: Boolean(pageStates[getPageKey()]?.completed),
-        score: pageStates[getPageKey()]?.score || ""
+        completed: Boolean(previousState.completed),
+        score: previousState.score || ""
       };
+      try {
+        sessionStorage.setItem(pageStateStorageKey, JSON.stringify(pageStates));
+        sessionStorage.setItem(viewStateStorageKey, JSON.stringify({
+          mode: currentMode,
+          section: currentSection,
+          round: currentRound
+        }));
+      } catch (error) {
+        // Keep the current session working if browser storage is unavailable.
+      }
     }
 
     function renderRound({ reset = false } = {}) {
       const round = getCurrentRoundData();
       const state = reset ? null : pageStates[getPageKey()];
       lessonTitle.textContent = `木蘭詩 ${sectionNames[currentSection]}`;
+      body.classList.remove("mode-detect", "mode-suspect", "mode-doubt", "mode-infer");
+      body.classList.add(`mode-${currentMode}`);
+      modeHint.textContent = hints[currentMode];
+      strategyButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.mode === currentMode);
+      });
       body.classList.remove("section-1", "section-2", "section-3", "section-4", "section-5", "section-6");
       body.classList.add(`section-${currentSection}`);
       body.classList.toggle("round-1", currentRound === "1");
       body.classList.toggle("round-2", currentRound === "2");
       renderAnswerSegments(state?.markedAnswer || []);
-      modelTranslation.classList.toggle("visible", Boolean(state?.answerVisible));
-      answerTools.classList.toggle("visible", Boolean(state?.answerVisible));
-      selfAssessment.classList.toggle("visible", Boolean(state?.answerVisible));
+      const hasCompared = Boolean(state?.answerVisible || state?.completed || state?.locked);
+      modelTranslation.classList.toggle("visible", hasCompared);
+      answerTools.classList.toggle("visible", hasCompared);
+      selfAssessment.classList.toggle("visible", hasCompared);
       selfAssessment.classList.toggle("scored", Boolean(state?.score));
       studentTranslation.value = state?.studentTranslation || "";
       studentId.value = state?.studentId || "";
@@ -1227,6 +1314,7 @@
         button.classList.toggle("active", button.dataset.mode === mode);
       });
       updateCompareButton();
+      saveCurrentPageState();
     }
 
     function updateCompareButton() {
@@ -1483,6 +1571,7 @@
         currentRound = button.dataset.round;
         renderRoundControls();
         renderRound();
+        saveCurrentPageState();
       });
     });
 
@@ -1495,6 +1584,7 @@
         sectionButtons.forEach((item) => item.classList.toggle("active", item === button));
         renderRoundControls();
         renderRound();
+        saveCurrentPageState();
       });
     });
 
@@ -1541,6 +1631,11 @@
           completed: true,
           score: button.dataset.score
         };
+        try {
+          sessionStorage.setItem(pageStateStorageKey, JSON.stringify(pageStates));
+        } catch (error) {
+          // Keep the current session working if browser storage is unavailable.
+        }
       });
     });
 
@@ -1565,6 +1660,12 @@
     });
 
     studentId.addEventListener("input", saveCurrentPageState);
+
+    trainingCenterLink.addEventListener("click", () => {
+      saveCurrentPageState();
+    });
+
+    window.addEventListener("beforeunload", saveCurrentPageState);
 
     function escapeHtml(text) {
       return text
@@ -1613,7 +1714,7 @@
           <div class="record-poem">${page.state.poemHtml.replaceAll('src="', `src="${assetBaseUrl.href}`)}</div>
           <h2>學生翻譯</h2>
           <div class="record-translation">${escapeHtml(page.state.studentTranslation)}</div>
-          <h2>正確版翻譯</h2>
+          <h2>參考翻譯</h2>
           <div class="record-answer">${renderRecordAnswer(page)}</div>
           <h2>自我評估</h2>
           <div class="record-score">${page.state.score ? `${page.state.score}%` : "未選擇"}</div>
