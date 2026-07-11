@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>偵探訓練中心｜文言文閱讀理解</title>
+  <style>
+    :root {
+      --ink: #28241f;
+      --muted: #6e6256;
+      --paper: #fffaf0;
+      --paper-deep: #f2e6d2;
+      --line: #d7c4a5;
+      --red: #bd2f32;
+      --green: #317c62;
+      --blue: #315f9f;
+      --violet: #6d4b92;
+      --gold: #bd8224;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        linear-gradient(135deg, rgba(255, 250, 240, .96), rgba(239, 226, 205, .94)),
+        repeating-linear-gradient(0deg, rgba(115, 83, 42, .04) 0 1px, transparent 1px 5px);
+      font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+    }
+
+    .training-center {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 12px 0 16px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--muted);
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+
+    .case-label { color: var(--red); }
+
+    .briefing {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(240px, .65fr);
+      gap: 18px;
+      align-items: end;
+      margin-top: 8px;
+      border: 2px solid var(--ink);
+      border-radius: 8px;
+      padding: 9px clamp(18px, 2.5vw, 28px);
+      background:
+        linear-gradient(90deg, rgba(255, 250, 240, .94) 0%, rgba(255, 250, 240, .86) 38%, rgba(255, 250, 240, .18) 68%, rgba(255, 250, 240, .02) 100%),
+        url("detective-training-banner.png") center / cover no-repeat;
+      box-shadow: 10px 10px 0 rgba(189, 130, 36, .2);
+      overflow: hidden;
+    }
+
+    .briefing::after {
+      content: "?";
+      position: absolute;
+      right: 5%;
+      bottom: -18%;
+      color: rgba(189, 47, 50, .08);
+      font: 900 clamp(180px, 24vw, 310px)/1 Georgia, serif;
+      pointer-events: none;
+    }
+
+    .title-image {
+      display: block;
+      width: min(100%, 330px);
+      height: auto;
+      margin: 0 0 6px;
+    }
+
+    .briefing-copy-image {
+      display: block;
+      width: min(100%, 500px);
+      height: auto;
+      margin-top: 6px;
+    }
+
+    .briefing > div:first-child {
+      align-self: center;
+      transform: none;
+    }
+
+    .badge {
+      position: relative;
+      z-index: 1;
+      justify-self: end;
+      width: min(230px, 100%);
+      border: 2px solid var(--ink);
+      padding: 20px;
+      background: #f8eddb;
+      transform: rotate(3deg);
+      text-align: center;
+    }
+
+    .hero-character-wrap {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      min-height: 125px;
+      align-items: end;
+      justify-content: center;
+    }
+
+    .hero-character-wrap .badge {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: min(125px, 55%);
+      padding: 6px;
+    }
+
+    .hero-character-wrap .badge-name {
+      margin-top: 5px;
+      font-size: clamp(16px, 2vw, 22px);
+    }
+
+    .badge-title {
+      color: var(--red);
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: .1em;
+    }
+
+    .badge-name {
+      margin-top: 12px;
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 900;
+    }
+
+    .briefing-note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .case-file {
+      margin-top: 12px;
+      border-left: 7px solid var(--red);
+      padding: 10px 16px;
+      background: rgba(255, 250, 240, .8);
+      font-size: clamp(16px, 1.55vw, 20px);
+      font-weight: 800;
+      line-height: 1.6;
+    }
+
+    .strategies {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .strategy {
+      display: block;
+      width: 100%;
+      color: var(--ink);
+      font: inherit;
+      text-align: left;
+      min-height: 170px;
+      border: 2px solid var(--ink);
+      border-radius: 8px;
+      padding: 16px;
+      background: var(--paper);
+      box-shadow: 5px 5px 0 rgba(40, 36, 31, .1);
+      cursor: pointer;
+      transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+
+    .strategy:hover,
+    .strategy.active {
+      transform: translateY(-3px);
+      background: #fff;
+      box-shadow: 7px 8px 0 rgba(40, 36, 31, .14);
+    }
+
+    .strategy.active {
+      outline: 3px solid currentColor;
+      outline-offset: 3px;
+    }
+
+    .strategy-number {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .strategy h3 {
+      margin: 12px 0 8px;
+      font-size: clamp(21px, 2vw, 28px);
+      line-height: 1.2;
+    }
+
+    .strategy p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.55;
+    }
+
+    .strategy.detect .strategy-number { background: var(--green); }
+    .strategy.suspect .strategy-number { background: var(--red); }
+    .strategy.doubt .strategy-number { background: var(--blue); }
+    .strategy.infer .strategy-number { background: var(--violet); }
+
+    .training-content {
+      display: none;
+      margin-top: 14px;
+      border: 2px solid var(--ink);
+      border-left: 8px solid var(--green);
+      border-radius: 8px;
+      padding: 18px 22px;
+      background: var(--paper);
+      box-shadow: 5px 5px 0 rgba(40, 36, 31, .1);
+    }
+
+    .training-content.visible { display: block; }
+
+    .training-content.suspect { border-left-color: var(--red); }
+    .training-content.doubt { border-left-color: var(--blue); }
+    .training-content.infer { border-left-color: var(--violet); }
+
+    .training-content-layout {
+      display: grid;
+      grid-template-columns: minmax(120px, 180px) minmax(0, 1fr);
+      gap: 20px;
+      align-items: center;
+    }
+
+    .training-character {
+      display: block;
+      width: 100%;
+      max-height: 210px;
+      object-fit: contain;
+      object-position: bottom center;
+    }
+
+    .training-content h2 {
+      margin: 0 0 8px;
+      font-size: clamp(24px, 3vw, 36px);
+    }
+
+    .training-content p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.6;
+    }
+
+    .inference-method {
+      display: table;
+      width: fit-content;
+      max-width: 100%;
+      margin: 8px 0;
+      border: 2px solid var(--blue);
+      border-radius: 8px;
+      padding: 7px 12px;
+      color: var(--blue);
+      background: rgba(49, 95, 159, .08);
+      font-weight: 900;
+    }
+
+    .training-subheading {
+      display: block;
+      margin: 12px 0 6px;
+      color: var(--red);
+      font-size: 23px;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .emphasis-red {
+      color: var(--red);
+      font-weight: 900;
+    }
+
+    .start-button,
+    .enter-scene-button {
+      display: inline-block;
+      border-radius: 8px;
+      padding: 13px 20px;
+      color: #fff !important;
+      background: #bd2f32 !important;
+      border: 2px solid #bd2f32;
+      font-size: 18px;
+      font-weight: 900;
+      text-decoration: none;
+      box-shadow: 4px 4px 0 rgba(40, 36, 31, .18);
+    }
+
+    .start-button:hover,
+    .enter-scene-button:hover {
+      color: #fff !important;
+      background: #a9272a !important;
+      transform: translate(-1px, -1px);
+    }
+
+    .topbar .start-button,
+    .topbar .enter-scene-button {
+      display: inline-block;
+      padding: 9px 15px;
+      font-size: 16px;
+      color: #fff !important;
+      background: #bd2f32 !important;
+      border: 2px solid #bd2f32;
+      text-decoration: none;
+    }
+
+    @media (min-width: 681px) and (max-height: 820px) {
+      .training-center { padding-top: 8px; padding-bottom: 8px; }
+      .briefing { padding: 8px 24px; }
+      .title-image { width: min(100%, 280px); margin-bottom: 4px; }
+      .briefing-copy-image { width: min(100%, 420px); margin-top: 4px; }
+      .hero-character-wrap { min-height: 100px; }
+      .hero-character-wrap .badge { bottom: 0; padding: 5px; }
+      .hero-character-wrap .badge-name { font-size: 19px; }
+      .case-file { padding: 7px 12px; font-size: 15px; }
+      .strategy { min-height: 132px; padding: 12px; }
+      .strategy-number { width: 34px; height: 34px; font-size: 18px; }
+      .strategy h3 { margin: 8px 0 4px; font-size: 21px; }
+      .strategy p { font-size: 13px; }
+      .enter-scene-button { padding: 9px 14px; font-size: 15px; }
+      .training-content-layout { grid-template-columns: 100px minmax(0, 1fr); gap: 12px; }
+      .training-character { max-height: 150px; }
+    }
+
+    @media (max-width: 900px) {
+      .briefing { grid-template-columns: 1fr; }
+      .badge { justify-self: start; }
+      .strategies { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 560px) {
+      .training-center { width: min(100% - 22px, 1180px); padding-top: 14px; }
+      .topbar { align-items: flex-start; flex-direction: column; gap: 8px; }
+      .briefing { padding: 24px 20px; }
+      .strategies { grid-template-columns: 1fr; }
+      .strategy { min-height: 0; }
+      .training-content-layout { grid-template-columns: 1fr; }
+      .training-character { width: 120px; max-height: 150px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="training-center">
+    <div class="topbar">
+      <div class="case-label">文言文偵查局｜閱讀理解策略</div>
+      <a class="enter-scene-button" href="木蘭詩第一節互動閱讀.html">進入案件現場</a>
+    </div>
+
+    <section class="briefing">
+      <div>
+        <img class="title-image" src="標題.png" alt="偵探訓練中心">
+        <img class="briefing-copy-image" src="文言文.png" alt="文言文就像一樁離奇、撲朔迷離的案件。拾起散落的線索，拼拼湊湊，找出事件的全貌。">
+      </div>
+      <div class="hero-character-wrap">
+        <div class="badge" aria-label="偵探學員證">
+          <div class="badge-title">偵探學員證</div>
+          <div class="badge-name">木蘭偵探</div>
+          <div class="briefing-note">任務：木蘭詩</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="case-file" aria-label="偵查任務說明">
+      文本中每一個字、每一個主詞、每一個線索，都可能是破案的關鍵。準備好了嗎？偵探訓練即將開始......
+    </section>
+
+    <section class="strategies" aria-label="文言文閱讀理解策略">
+      <button class="strategy detect" type="button" data-training="detect">
+        <div class="strategy-number">1</div>
+        <h3>抽絲剝繭</h3>
+        <p>利用標點斷句，將長文本切碎。</p>
+      </button>
+      <button class="strategy suspect" type="button" data-training="suspect">
+        <div class="strategy-number">2</div>
+        <h3>誰是嫌疑人？</h3>
+        <p>圈出主詞、找出隱藏的主詞</p>
+      </button>
+      <button class="strategy doubt" type="button" data-training="doubt">
+        <div class="strategy-number">3</div>
+        <h3>分析疑點</h3>
+        <p>利用換字、加字、部首、上下文推論生難字詞。</p>
+      </button>
+      <button class="strategy infer" type="button" data-training="infer">
+        <div class="strategy-number">4</div>
+        <h3>推理事件經過</h3>
+        <p>把散落的線索串起來，加字翻譯，還原事件全貌。</p>
+      </button>
+    </section>
+
+    <section class="training-content" id="trainingContent" aria-live="polite"></section>
+
+  </main>
+  <script>
+    const pageStateStorageKey = "mulan-poem-reading-page-states-session-v2";
+    const viewStateStorageKey = "mulan-poem-reading-view-session-v1";
+    const navigationEntry = performance.getEntriesByType("navigation")[0];
+    const isPageReload = navigationEntry?.type === "reload" || performance.navigation?.type === 1;
+    if (isPageReload) {
+      try {
+        sessionStorage.removeItem(pageStateStorageKey);
+        sessionStorage.removeItem(viewStateStorageKey);
+      } catch (error) {
+        // Keep the training center available if browser storage is unavailable.
+      }
+    }
+
+    const trainingContent = document.getElementById("trainingContent");
+    const trainingButtons = Array.from(document.querySelectorAll("[data-training]"));
+    const trainingLessons = {
+      detect: {
+        title: "策略一｜抽絲剝繭（斷句）",
+        text: "利用<span class=\"emphasis-red\">「。」、「？」</span>，把長文章切成獨立的語意區塊，<br>一次只讀一個區塊，大腦就不會過載。"
+      },
+      suspect: {
+        title: "策略二｜誰是嫌疑人（圈補主詞）",
+        text: "在文言文中「主詞」經常隱去，造成情節誤判，<br>因此我們要像偵探一樣，<br>在每個動詞前標註<span class=\"emphasis-red\">「到底是誰做的？」</span>，釐清情節走向。"
+      },
+      doubt: {
+        title: "策略三｜分析疑點（解代詞、生難字詞）",
+        text: "<span class=\"training-subheading\">1.解鎖代詞：『欲解代詞謎，轉身往前尋。』</span>文言文中常使用代詞來精簡文字，小偵探們可以利用上文留下的蛛絲馬跡，推理出它的廬山真面目！<span class=\"training-subheading\">2.解開生難字詞：『字詞變身秀，五招現原形』</span><span class=\"inference-method\">＊換字：回顧學過課文做連結</span><span class=\"inference-method\">＊加字：一字變兩字，造詞現真意</span><span class=\"inference-method\">＊部首：部首藏線索，敢猜就能破</span><span class=\"inference-method\">＊上下文：從上下文反覆推敲，線索不遺漏</span><span class=\"inference-method\">＊略過：猜不透就略過</span>"
+      },
+      infer: {
+        title: "策略四｜推理事件經過（真相大白！還原事件全貌）",
+        text: "<span class=\"training-subheading\">＊信（忠實）：『有幾分證據，說幾分話！』</span>忠實呈現文本，前面補出的主詞、解開的難詞，都要老老實實地還原在句子裡，不能憑空捏造，也不漏掉任何重要線索。<br><br><span class=\"training-subheading\">＊達（流暢）：『讀起來要流暢，不卡卡！』</span>語意流暢，文言文在翻譯成現代文時，必須依照我們的說話習慣重新排列組合，讀起來要通順、不彆扭。<br><br><span class=\"training-subheading\">＊雅（文雅）：『字裡行間，要有文人的浪漫！』</span>除了流暢外，更要試著選擇優美、有質感的現代詞彙，保留詩歌原本的文學美感與情懷。"
+      }
+    };
+
+    trainingButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const lesson = trainingLessons[button.dataset.training];
+        const isOpen = button.classList.contains("active");
+        trainingButtons.forEach((item) => item.classList.remove("active"));
+        trainingContent.classList.remove("detect", "suspect", "doubt", "infer");
+        if (isOpen) {
+          trainingContent.classList.remove("visible");
+          trainingContent.innerHTML = "";
+          return;
+        }
+        button.classList.add("active");
+        trainingContent.classList.add(button.dataset.training);
+        trainingContent.innerHTML = `<div class="training-content-layout"><img class="training-character" src="mulan-detective.png" alt="木蘭偵探陪同訓練"><div><h2>${lesson.title}</h2><p>${lesson.text}</p></div></div>`;
+        trainingContent.classList.add("visible");
+      });
+    });
+  </script>
+</body>
+</html>
